@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Cat 1",
+    "img": "",
+    "parent": null,
+    "birth": "2010-01-01",
+    "death": "2015-01-01",
+    "current": false
+  },
+  {
+    "name": "Cat 2",
+    "img": "",
+    "parent": "Cat 1",
+    "birth": "2004-08-01",
+    "death": "null,
+    "current": true
+  }
+]
