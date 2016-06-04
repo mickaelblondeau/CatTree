@@ -29,6 +29,10 @@ svg.addEventListener('mousemove', function(e) {
         };
         svgTempPosition.x += diff.x * moveSensi;
         svgTempPosition.y += diff.y * moveSensi;
+
+        if(svgTempPosition.x < 0) svgTempPosition.x = 0;
+        if(svgTempPosition.y < 0) svgTempPosition.y = 0;
+
         svg.setAttribute('viewBox', svgTempPosition.x + ' ' + svgTempPosition.y + ' ' + screenWidth + ' ' + screenHeight);
     }
 });

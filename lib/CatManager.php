@@ -35,6 +35,9 @@ class CatManager
      */
     public $texts;
 
+    /**
+     * @return CatManager
+     */
     public static function getInstance()
     {
         if(!self::$instance)
@@ -138,13 +141,17 @@ class CatManager
         $segPerYear = 12;
         for($i = 0; $i < $years; $i++) {
             $x = $i * self::PIXEL_PER_YEAR;
-            $svg .= drawLine($x, 25, $x, 40, 'cccccc');
-            $svg .= drawText($x, 20, 'cccccc', self::START_YEAR + $i);
+            $svg .= SVGDraw::drawLine($x, 25, $x, 10000, 'eaeaea');
+            $svg .= SVGDraw::drawLine($x, 25, $x, 40, 'cccccc');
+            $svg .= SVGDraw::drawText($x, 20, 'cccccc', self::START_YEAR + $i);
             for($j = 0; $j < $segPerYear; $j++) {
                 $x2 = $x + $j * self::PIXEL_PER_YEAR / $segPerYear;
-                $svg .= drawLine($x2, 25, $x2, 30, 'cccccc');
+                $svg .= SVGDraw::drawLine($x2, 25, $x2, 30, 'cccccc');
             }
         }
+
+        $todayX = (((strtotime(date('Y-m-d')) - strtotime(date('Y') . '-01-01')) / 31536000) + $i - 1) * self::PIXEL_PER_YEAR;
+        $svg .= SVGDraw::drawLine($todayX, 25, $todayX, 10000, '000000');
 
         return $svg;
     }

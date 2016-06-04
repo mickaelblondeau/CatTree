@@ -103,7 +103,7 @@ class Cat {
      */
     public function getStartToPixel()
     {
-        $diff = strtotime($this->startDate) - strtotime(CatManager::START_YEAR . date('-m-d'));
+        $diff = strtotime($this->startDate) - strtotime(CatManager::START_YEAR . '-01-01');
         $yearDiff = $diff / 31536000;
         return (int)round($yearDiff * CatManager::PIXEL_PER_YEAR);
     }
@@ -132,6 +132,19 @@ class Cat {
         return (int)round($yearDiff * CatManager::PIXEL_PER_YEAR);
     }
 
+    public function getLineWidth()
+    {
+        return max(2, 10 - $this->getParentNumber());
+    }
+
+    public function getParentNumber()
+    {
+        $parents = 1;
+        if($this->parent)
+            $parents += $this->parent->getParentNumber();
+        return $parents;
+    }
+
     /**
      * @param Cat $cat
      */
@@ -146,17 +159,18 @@ class Cat {
         $this->pos_y = self::$current_y;
         self::$current_y += self::LINE_HEIGHT;
 
-        CatManager::getInstance()->lines[] = drawLine($this->pos_x, $this->pos_y, $this->pos_x + $this->getLifeToPixel(), $this->pos_y, $this->getColor());
-        CatManager::getInstance()->texts[] = drawText($this->pos_x + self::TEXT_MARGIN_LEFT, $this->pos_y + self::TEXT_MARGIN_TOP, $this->getColor(), $this->name);
+        CatManager::getInstance()->lines[] = SVGDraw::drawLine($this->pos_x, $this->pos_y, $this->pos_x + $this->getLifeToPixel(), $this->pos_y, $this->getColor(), $this->getLineWidth());
+        CatManager::getInstance()->texts[] = SVGDraw::drawText($this->pos_x + self::TEXT_MARGIN_LEFT, $this->pos_y + self::TEXT_MARGIN_TOP, $this->getColor(), $this->name, 24);
 
         if(!$this->stopDate && !$this->current)
-            CatManager::getInstance()->texts[] = drawText($this->pos_x + $this->getLifeToPixel(), $this->pos_y, $this->getColor(), '?');
+            CatManager::getInstance()->texts[] = SVGDraw::drawText($this->pos_x + $this->getLifeToPixel(), $this->pos_y, $this->getColor(), '?');
 
         if($this->parent) {
-            CatManager::getInstance()->lines[] = drawLine($this->pos_x, $this->pos_y, $this->pos_x, $this->parent->pos_y, $this->parent->getColor());
-            CatManager::getInstance()->circles[] = drawCircle($this->pos_x, $this->parent->pos_y, 10, $this->parent->getColor());
+            CatManager::getInstance()->lines[] = SVGDraw::drawLine($this->pos_x, $this->pos_y, $this->pos_x, $this->parent->pos_y, $this->parent->getColor(), $this->parent->getLineWidth());
+            CatManager::getInstance()->circles[] = SVGDraw::drawCircle($this->pos_x, $this->parent->pos_y, 7, $this->parent->getColor());
         }
-        CatManager::getInstance()->circles[] = drawCircle($this->pos_x, $this->pos_y, 50, $this->getColor(), $this->getImage());
+        CatManager::getInstance()->circles[] = SVGDraw::drawCircle($this->pos_x, $this->pos_y, 50, $this->getColor());
+        CatManager::getInstance()->circles[] = SVGDraw::drawCircle($this->pos_x, $this->pos_y, 50, $this->getColor(), $this->getImage());
 
         if(count($this->childs) > 0)
             foreach($this->childs as $child)
