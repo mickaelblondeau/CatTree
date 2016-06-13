@@ -1,5 +1,9 @@
 <?php
 
+namespace App;
+
+use stojg\crop\CropCenter;
+
 class Cat {
     const TOP_MARGIN = 20;
     const LINE_HEIGHT = 100;
@@ -10,7 +14,7 @@ class Cat {
     /**
      * @var int
      */
-    public static $current_y = self::TOP_MARGIN + self::LINE_HEIGHT;
+    public static $current_y = 120;
 
     /**
      * @var string
@@ -95,7 +99,18 @@ class Cat {
      */
     public function getImage()
     {
-        return 'img/' . $this->image;
+        if(extension_loaded('imagick')) {
+            $filename = 'thumb_' . $this->image;
+            $path = __DIR__ . '/../web/img/';
+            if(!file_exists($path . $filename)) {
+                $center = new CropCenter($path . $this->image);
+                $croppedImage = $center->resizeAndCrop(self::LINE_HEIGHT, self::LINE_HEIGHT);
+                $croppedImage->writeimage($path . $filename);
+            }
+            return 'img/' . $filename;
+        } else {
+            return 'img/' . $this->image;
+        }
     }
 
     /**
@@ -158,6 +173,9 @@ class Cat {
         self::$current_y += self::CHILD_MARGIN_TOP;
         $this->pos_y = self::$current_y;
         self::$current_y += self::LINE_HEIGHT;
+        CatManager::$instance->maxY = self::$current_y;
+
+        CatManager::getInstance()->lines[] = SVGDraw::drawLine(0, $this->pos_y, CatManager::$instance->maxX, $this->pos_y, $this->getColor(), 0.25);
 
         CatManager::getInstance()->lines[] = SVGDraw::drawLine($this->pos_x, $this->pos_y, $this->pos_x + $this->getLifeToPixel(), $this->pos_y, $this->getColor(), $this->getLineWidth());
         CatManager::getInstance()->texts[] = SVGDraw::drawText($this->pos_x + self::TEXT_MARGIN_LEFT, $this->pos_y + self::TEXT_MARGIN_TOP, $this->getColor(), $this->name, 24);

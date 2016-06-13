@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class SVGDraw
 {
     public static function drawLine($x1, $y1, $x2, $y2, $color, $width = 2) {

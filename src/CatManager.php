@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class CatManager
 {
     const START_YEAR = 1980;
@@ -34,6 +36,16 @@ class CatManager
      * @var array
      */
     public $texts;
+
+    /**
+     * @var int
+     */
+    public $maxX = 0;
+
+    /**
+     * @var int
+     */
+    public $maxY = 0;
 
     /**
      * @return CatManager
@@ -141,7 +153,7 @@ class CatManager
         $segPerYear = 12;
         for($i = 0; $i < $years; $i++) {
             $x = $i * self::PIXEL_PER_YEAR;
-            $svg .= SVGDraw::drawLine($x, 25, $x, 10000, 'eaeaea');
+            $svg .= SVGDraw::drawLine($x, 25, $x, 10000, 'eaeaea', 0.3);
             $svg .= SVGDraw::drawLine($x, 25, $x, 40, 'cccccc');
             $svg .= SVGDraw::drawText($x, 20, 'cccccc', self::START_YEAR + $i);
             for($j = 0; $j < $segPerYear; $j++) {
@@ -152,6 +164,7 @@ class CatManager
 
         $todayX = (((strtotime(date('Y-m-d')) - strtotime(date('Y') . '-01-01')) / 31536000) + $i - 1) * self::PIXEL_PER_YEAR;
         $svg .= SVGDraw::drawLine($todayX, 25, $todayX, 10000, '000000');
+        $this->maxX = (int)$todayX + 100;
 
         return $svg;
     }
